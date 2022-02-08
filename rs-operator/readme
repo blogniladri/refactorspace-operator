@@ -1,0 +1,34 @@
+eksctl utils associate-iam-oidc-provider --cluster <cluster-name> --approve
+
+aws iam create-policy --policy-name refactorspace-operator-policy --policy-document file://policy.json 
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "refactor-spaces:*",
+                "ram:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+eksctl create iamserviceaccount \
+    --name refactorspace-account \
+    --namespace refactorspace-system \
+    --cluster eks-microservice \
+    --attach-policy-arn arn:aws:iam::813136120207:policy/refactorspace-operator-policy \
+    --approve \
+    --override-existing-serviceaccounts
+
+
+
+    create role - arn:aws:iam::<account-name>:role/refactorspace-role-cluster
+with following policy
+    AWSMigrationHubRefactorSpacesFullAccess 
+    AWSResourceAccessManagerFullAccess
+    
