@@ -1,0 +1,15 @@
+apiVersion: eks.amazonaws.com/v1
+kind: RefactorSpaceService
+metadata:
+ name: create-account-ingress
+ namespace: create-account
+spec:
+ route: /create-account-ingress.jsp
+ prefix: 
+ healthCheckPrefix: 
+ protocol: HTTP
+ method: GET
+ serviceSelector:
+    matchLabels:
+       app: create-account-ingress
+ configurationName: refactorspace-config-ns.banking-app-config

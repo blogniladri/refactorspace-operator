@@ -1,0 +1,15 @@
+apiVersion: eks.amazonaws.com/v1
+kind: RefactorSpaceService
+metadata:
+  name: create-account-lb
+  namespace: create-account
+spec:
+  route: /create-account-lb.jsp
+  prefix: 
+  healthCheckPrefix: 
+  protocol: HTTP
+  method: GET
+  serviceSelector:
+     matchLabels:
+        app: create-account-loadbalancer
+  configurationName: refactorspace-config-ns.banking-app-config

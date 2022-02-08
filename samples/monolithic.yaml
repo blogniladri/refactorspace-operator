@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monolithic
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: monolithic-nodeport
+  namespace: monolithic
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: monolithic
+  type: NodePort
+
+---
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  namespace: monolithic
+  name: monolithic-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: instance
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: monolithic-nodeport
+              servicePort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: monolithic
+  name: monolithic-deployment
+  namespace: monolithic
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: monolithic
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: monolithic
+    spec:
+      containers:
+      - image: 409345236914.dkr.ecr.us-east-1.amazonaws.com/monolithic
+        imagePullPolicy: Always
+        name: monolithic
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
